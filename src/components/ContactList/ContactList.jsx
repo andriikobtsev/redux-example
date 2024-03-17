@@ -4,6 +4,7 @@ import * as css from "./ContactList.module.css";
 import { selectContacts, selectNameFilter } from "../../redux/selectors";
 
 const getFilteredConatcs = (contacts, filter) => {
+  if (filter === "") return contacts;
   return contacts.filter(
     (contact) =>
       contact.name &&
@@ -17,7 +18,7 @@ const getFilteredConatcs = (contacts, filter) => {
 const ContactList = () => {
   const contacts = useSelector(selectContacts);
   const searchValue = useSelector(selectNameFilter);
-  const filteredContacts = getFilteredConatcs(contacts, searchValue);
+  const filteredContacts = getFilteredConatcs(contacts, searchValue.trim());
 
   return (
     <>
