@@ -6,7 +6,7 @@ import { contactsReducer } from "./contactsSlice";
 import { filtersReducer } from "./filtersSlice";
 
 const reducers = combineReducers({
-  items: contactsReducer,
+  contacts: contactsReducer,
   filters: filtersReducer,
 });
 
