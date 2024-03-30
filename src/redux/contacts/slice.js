@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchContacts, deleteContact, addContact } from "./contactsOps";
+import {
+  fetchContacts,
+  deleteContact,
+  addContact,
+  updateContact,
+} from "./operations";
+import toast from "react-hot-toast";
 
 const handlePending = (state) => {
   state.isLoading = true;
@@ -8,6 +14,7 @@ const handlePending = (state) => {
 const handleRejected = (state, action) => {
   state.isLoading = false;
   state.error = action.payload;
+  toast.error(action.payload);
 };
 
 const contactsSlice = createSlice({
@@ -17,7 +24,7 @@ const contactsSlice = createSlice({
     isLoading: false,
     error: null,
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, handlePending)
       .addCase(fetchContacts.fulfilled, (state, action) => {
@@ -31,16 +38,32 @@ const contactsSlice = createSlice({
         state.isLoading = false;
         state.error = null;
         state.items.push(action.payload);
+        toast.success(`Contact ${action.payload.name} added`);
       })
       .addCase(addContact.rejected, handleRejected)
+      .addCase(updateContact.pending, handlePending)
+      .addCase(updateContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        const index = state.items.findIndex(
+          (item) => item.id === action.payload.id
+        );
+        state.items[index] = action.payload;
+        toast.success(`Contact ${action.payload.name} updated`);
+      })
+      .addCase(updateContact.rejected, handleRejected)
       .addCase(deleteContact.pending, handlePending)
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        const index = state.items.findIndex(
+          (item) => item.id === action.payload.id
+        );
         state.items.splice(index, 1);
+        toast.success(`Contact ${action.payload.name} deleted`);
       })
-      .addCase(deleteContact.rejected, handleRejected)
-    }})
+      .addCase(deleteContact.rejected, handleRejected);
+  },
+});
 
 export const contactsReducer = contactsSlice.reducer;
