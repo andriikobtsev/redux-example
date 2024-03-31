@@ -1,13 +1,14 @@
 import { useDispatch } from 'react-redux';
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useId } from "react";
+import { Button, TextField, FormControl } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { useId } from 'react';
 import { addContact } from '../../redux/contacts/operations';
-import * as css from "./ContactForm.module.css";
+import * as css from './ContactForm.module.css';
 
 export const ContactForm = () => {
-  const dispatch = useDispatch()
-  const handleAdd = (contact) => dispatch(addContact(contact));
+  const dispatch = useDispatch();
+  const handleAdd = contact => dispatch(addContact(contact));
 
   const nameFieldId = useId();
   const numberFieldId = useId();
@@ -18,56 +19,59 @@ export const ContactForm = () => {
       .required(<span className={css.error}>Required</span>),
     number: Yup.string()
       .min(3, <span className={css.error}>Too Short!</span>)
-      .max(20, "Number too long!")
+      .max(20, 'Number too long!')
       .required(<span className={css.error}>Required</span>),
   });
 
   const initialValues = {
-    username: "",
-    number: "",
+    username: '',
+    number: '',
   };
+
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: schema,
+    onSubmit: (values, actions) => {
+      handleAdd({
+        username: values.username,
+        name: values.username,
+        number: values.number,
+      });
+      actions.resetForm();
+    },
+  });
+
   return (
-    <Formik
-      validationSchema={schema}
-      initialValues={initialValues}
-      onSubmit={(values, actions) => {
-        handleAdd({
-          username: values.username,
-          name: values.username,
-          number: values.number,
-        });
-        actions.resetForm();
-      }}
-    >
-      <Form className={css.wind}>
-        <div className={css.form}>
-          <h2 className={css.name}>Name</h2>
-          <label htmlFor={nameFieldId}></label>
-          <Field
-            className={css.field}
-            type="text"
+    <div>
+      <form onSubmit={formik.handleSubmit}>
+        <FormControl className={css.form}>
+        <TextField
             name="username"
+            variant='outlined'
+            label='Name'
+            size='small'
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
             id={nameFieldId}
-          ></Field>
-          <ErrorMessage name="username" as="span"></ErrorMessage>
-        </div>
-        <div className={css.form}>
-          <h2 className={css.name}>Number</h2>
-          <label htmlFor={numberFieldId}></label>
-          <Field
-            className={css.field}
-            type="text"
+          ></TextField>
+          <TextField
+            label='Number'
+            variant='outlined'
+            size='small'
             name="number"
             id={numberFieldId}
-          ></Field>
-          <ErrorMessage name="number" as="span"></ErrorMessage>
-        </div>
-        <div className={css.form}>
-          <button className={css.btnadd} type="submit">
+            value={formik.values.number}
+            onChange={formik.handleChange}
+            error={formik.touched.number && Boolean(formik.errors.number)}
+            helperText={formik.touched.number && formik.errors.number}
+          />
+          <Button variant="contained" type="submit">
             Add contact
-          </button>
-        </div>
-      </Form>
-    </Formik>
+          </Button>
+        </FormControl>
+      </form>
+    </div>
   );
 };

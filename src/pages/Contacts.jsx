@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Grid, Stack } from '@mui/material';
 import DocumentTitle from '../components/DocumentTitle';
 import { ContactList } from '../components/ContactList/ContactList';
 import { SearchBox } from '../components/SearchBox/SearchBox';
@@ -17,11 +18,24 @@ export default function Contacts() {
 
   return (
     <>
-      <DocumentTitle>Your tasks</DocumentTitle>
+      <DocumentTitle>Your contacts</DocumentTitle>
       <div>{isLoading && 'Request in progress...'}</div>
-      <ContactForm />
-      <SearchBox />
-      <ContactList />
+      <Stack direction='column' spacing={3}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+        >
+          <Grid item xs={6}>
+            <ContactForm />
+          </Grid>
+          <Grid item xs={6}>
+            <SearchBox />
+          </Grid>
+        </Grid>
+        <ContactList />
+      </Stack>
     </>
   );
 }

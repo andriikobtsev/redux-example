@@ -1,39 +1,67 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { FaPhoneAlt } from "react-icons/fa";
-import { IoPerson } from "react-icons/io5";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import Modal from "react-modal";
-import { deleteContact, updateContact } from "../../redux/contacts/operations";
-import * as css from "./Contact.module.css";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useFormik } from 'formik';
+import PhoneIcon from '@mui/icons-material/Phone';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PersonIcon from '@mui/icons-material/Person';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Button,
+  List,
+  ListItem,
+  IconButton,
+  ListItemText,
+  ListItemIcon,
+  Stack,
+  Paper,
+  TextField,
+  FormControl,
+  Box,
+} from '@mui/material';
+import * as Yup from 'yup';
+import Modal from 'react-modal';
+import { deleteContact, updateContact } from '../../redux/contacts/operations';
+import * as css from './Contact.module.css';
 
-Modal.setAppElement("#root");
+Modal.setAppElement('#root');
 
-const ContactView = ({name, number, editContact, openModal}) => {
+const ContactView = ({ name, number, editContact, openModal }) => {
   return (
-    <div>
-      <li className={css.card}>
-        <div className={css.list}>
-          <p className={css.contact}>
-            <IoPerson size={20} /> {name}
-          </p>
-          <p className={css.contact}>
-            <FaPhoneAlt size={20} /> {number}
-          </p>
-        </div>
-        <div className={css.delete}>
-          <button onClick={editContact}>Edit</button>
-        </div>
-        <div className={css.delete}>
-          <button onClick={openModal}>Delete</button>
-        </div>
-      </li>
-    </div>
+    <Stack direction="row" spacing={2}>
+      <Paper elevation={5}>
+        <List>
+          <ListItem>
+            <ListItemIcon>
+              <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary={name}></ListItemText>
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <PhoneIcon />
+            </ListItemIcon>
+            <ListItemText primary={number}></ListItemText>
+          </ListItem>
+        </List>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          <IconButton edge="end" aria-label="delete" onClick={editContact}>
+            <EditIcon />
+          </IconButton>
+          <IconButton edge="end" aria-label="delete" onClick={openModal}>
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      </Paper>
+    </Stack>
   );
 };
 
-const ContactEdit = ({name, number, submitEdit, cancelEdit, id}) => {
+const ContactEdit = ({ name, number, submitEdit, cancelEdit, id }) => {
   const schema = Yup.object().shape({
     username: Yup.string()
       .min(3, <span className={css.error}>Too Short!</span>)
@@ -41,54 +69,60 @@ const ContactEdit = ({name, number, submitEdit, cancelEdit, id}) => {
       .required(<span className={css.error}>Required</span>),
     number: Yup.string()
       .min(3, <span className={css.error}>Too Short!</span>)
-      .max(20, "Number too long!")
+      .max(20, 'Number too long!')
       .required(<span className={css.error}>Required</span>),
   });
-  
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: { username: name, number: number },
+    validationSchema: schema,
+    onSubmit: values => {
+      submitEdit({
+        id: id,
+        name: values.username,
+        number: values.number,
+      });
+    },
+  });
+
   return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={{ username: name, number: number }}
-      validationSchema={schema}
-      onSubmit={(values) => {
-        submitEdit({
-          id: id,
-          name: values.username,
-          number: values.number
-        });
-      }}
-    >
-      <Form className={css.wind}>
-        <div className={css.form}>
-          <h2 className={css.name}>Name</h2>
-          <Field
-            className={css.field}
-            type="text"
-            name="username"
-            values={name}
-          ></Field>
-          <ErrorMessage name="username" as="span"></ErrorMessage>
-        </div>
-        <div className={css.form}>
-          <h2 className={css.name}>Number</h2>
-          <Field
-            className={css.field}
-            type="text"
-            name="number"
-            values={number}
-          ></Field>
-          <ErrorMessage name="number" as="span"></ErrorMessage>
-        </div>
-        <div className={css.form}>
-          <button className={css.btnadd} type="submit">
-            Confirm
-          </button>
-          <button className={css.btnadd} type="button" onClick={cancelEdit}>
-            Cancel
-          </button>
-        </div>
-      </Form>
-    </Formik>
+    <div>
+      <Box>
+        <Paper>
+          <form onSubmit={formik.handleSubmit}>
+            <FormControl>
+              <TextField
+                name="username"
+                variant="outlined"
+                label="Name"
+                size="small"
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.username && Boolean(formik.errors.username)
+                }
+                helperText={formik.touched.username && formik.errors.username}
+              ></TextField>
+              <TextField
+                label="Number"
+                variant="outlined"
+                size="small"
+                name="number"
+                value={formik.values.number}
+                onChange={formik.handleChange}
+                error={formik.touched.number && Boolean(formik.errors.number)}
+                helperText={formik.touched.number && formik.errors.number}
+              />
+              <Button type="submit">Confirm</Button>
+              <Button type="button" onClick={cancelEdit}>
+                Cancel
+              </Button>
+            </FormControl>
+          </form>
+        </Paper>
+      </Box>
+    </div>
   );
 };
 
@@ -96,7 +130,7 @@ const Contact = ({ name, number, id }) => {
   const dispatch = useDispatch();
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const handleUpdate = (contact) => dispatch(updateContact(contact));
+  const handleUpdate = contact => dispatch(updateContact(contact));
 
   const openModal = () => {
     setIsOpen(true);
@@ -105,8 +139,8 @@ const Contact = ({ name, number, id }) => {
     setIsOpen(false);
   };
 
-  const submitEdit = (contact) => {
-    handleUpdate(contact)
+  const submitEdit = contact => {
+    handleUpdate(contact);
     setIsEditMode(false);
   };
 
@@ -125,28 +159,41 @@ const Contact = ({ name, number, id }) => {
 
   const customStyles = {
     content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
     },
   };
 
   return (
     <div>
-      {isEditMode
-        ? <ContactEdit name={name} number={number} submitEdit={submitEdit} cancelEdit={cancelEdit} id={id}/>
-        : <ContactView name={name} number={number} editContact={editContact} openModal={openModal}/>}
+      {isEditMode ? (
+        <ContactEdit
+          name={name}
+          number={number}
+          submitEdit={submitEdit}
+          cancelEdit={cancelEdit}
+          id={id}
+        />
+      ) : (
+        <ContactView
+          name={name}
+          number={number}
+          editContact={editContact}
+          openModal={openModal}
+        />
+      )}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         style={customStyles}
       >
         <p>Are you sure you want to delete contact {name}?</p>
-        <button onClick={closeModal}>No</button>
-        <button onClick={handleDelete}>Yes</button>
+        <Button onClick={closeModal}>No</Button>
+        <Button onClick={handleDelete}>Yes</Button>
       </Modal>
     </div>
   );
