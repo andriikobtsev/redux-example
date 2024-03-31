@@ -17,18 +17,16 @@ import {
   TextField,
   FormControl,
   Box,
+  Modal,
 } from '@mui/material';
 import * as Yup from 'yup';
-import Modal from 'react-modal';
 import { deleteContact, updateContact } from '../../redux/contacts/operations';
 import * as css from './Contact.module.css';
-
-Modal.setAppElement('#root');
 
 const ContactView = ({ name, number, editContact, openModal }) => {
   return (
     <Stack direction="row" spacing={2}>
-      <Paper elevation={5}>
+      <Paper elevation={5} sx={{width: 200}}>
         <List>
           <ListItem>
             <ListItemIcon>
@@ -87,42 +85,36 @@ const ContactEdit = ({ name, number, submitEdit, cancelEdit, id }) => {
   });
 
   return (
-    <div>
-      <Box>
-        <Paper>
-          <form onSubmit={formik.handleSubmit}>
-            <FormControl>
-              <TextField
-                name="username"
-                variant="outlined"
-                label="Name"
-                size="small"
-                value={formik.values.username}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.username && Boolean(formik.errors.username)
-                }
-                helperText={formik.touched.username && formik.errors.username}
-              ></TextField>
-              <TextField
-                label="Number"
-                variant="outlined"
-                size="small"
-                name="number"
-                value={formik.values.number}
-                onChange={formik.handleChange}
-                error={formik.touched.number && Boolean(formik.errors.number)}
-                helperText={formik.touched.number && formik.errors.number}
-              />
-              <Button type="submit">Confirm</Button>
-              <Button type="button" onClick={cancelEdit}>
-                Cancel
-              </Button>
-            </FormControl>
-          </form>
-        </Paper>
-      </Box>
-    </div>
+    <Box>
+      <Paper sx={{width: 200}}>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl>
+            <TextField
+              name="username"
+              variant="outlined"
+              size="small"
+              value={formik.values.username}
+              onChange={formik.handleChange}
+              error={formik.touched.username && Boolean(formik.errors.username)}
+              helperText={formik.touched.username && formik.errors.username}
+            ></TextField>
+            <TextField
+              variant="outlined"
+              size="small"
+              name="number"
+              value={formik.values.number}
+              onChange={formik.handleChange}
+              error={formik.touched.number && Boolean(formik.errors.number)}
+              helperText={formik.touched.number && formik.errors.number}
+            />
+            <Button type="submit">Confirm</Button>
+            <Button type="button" onClick={cancelEdit}>
+              Cancel
+            </Button>
+          </FormControl>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 
@@ -132,44 +124,36 @@ const Contact = ({ name, number, id }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const handleUpdate = contact => dispatch(updateContact(contact));
 
-  const openModal = () => {
-    setIsOpen(true);
-  };
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
 
   const submitEdit = contact => {
     handleUpdate(contact);
     setIsEditMode(false);
   };
 
-  const editContact = () => {
-    setIsEditMode(true);
-  };
-
-  const cancelEdit = () => {
-    setIsEditMode(false);
-  };
+  const editContact = () => setIsEditMode(true);
+  const cancelEdit = () => setIsEditMode(false);
 
   const handleDelete = () => {
     dispatch(deleteContact(id));
     closeModal();
   };
 
-  const customStyles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-    },
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
   };
 
   return (
-    <div>
+    <Box>
       {isEditMode ? (
         <ContactEdit
           name={name}
@@ -186,16 +170,14 @@ const Contact = ({ name, number, id }) => {
           openModal={openModal}
         />
       )}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-      >
-        <p>Are you sure you want to delete contact {name}?</p>
-        <Button onClick={closeModal}>No</Button>
-        <Button onClick={handleDelete}>Yes</Button>
+      <Modal open={modalIsOpen} onClose={closeModal}>
+        <Box sx={style}>
+          <p>Are you sure you want to delete contact {name}?</p>
+          <Button onClick={closeModal}>No</Button>
+          <Button onClick={handleDelete}>Yes</Button>
+        </Box>
       </Modal>
-    </div>
+    </Box>
   );
 };
 

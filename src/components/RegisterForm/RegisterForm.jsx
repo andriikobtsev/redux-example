@@ -1,13 +1,13 @@
-import { useDispatch } from "react-redux";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { register } from "../../redux/auth/operations";
-import css from "./RegisterForm.module.css";
+import { useDispatch } from 'react-redux';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { register } from '../../redux/auth/operations';
+import { FormControl, TextField, Button } from '@mui/material';
 
 export const RegisterForm = () => {
   const dispatch = useDispatch();
 
-  const handleSubmit = (form) => {
+  const handleSubmit = form => {
     dispatch(
       register({
         name: form.name,
@@ -18,52 +18,67 @@ export const RegisterForm = () => {
   };
 
   const schema = Yup.object().shape({
-    email: Yup.string()
-      .email(<span className={css.error}>email format is incorrect</span>)
-      .required(<span className={css.error}>Required</span>),
+    name: Yup.string().required('Required'),
+    email: Yup.string().email('Email format is incorrect').required('Required'),
     password: Yup.string()
-      .min(
-        7,
-        <span className={css.error}>
-          Password must be at least 7 characters long
-        </span>
-      )
-      .required(<span className={css.error}>Required</span>),
+      .min(7, 'Password must be at least 7 characters long')
+      .required('Required'),
   });
 
   const initialValues = {
-    name: "",
-    email: "",
-    password: "",
+    name: '',
+    email: '',
+    password: '',
   };
 
+  const formik = useFormik({
+    enableReinitialize: true,
+    validationSchema: schema,
+    onSubmit: (values, actions) => {
+      handleSubmit(values);
+      actions.resetForm();
+    },
+    initialValues: initialValues,
+  });
+
   return (
-    <Formik
-      validationSchema={schema}
-      onSubmit={(values, actions) => {
-        handleSubmit(values);
-        actions.resetForm();
-      }}
-      initialValues={initialValues}
-    >
-      <Form className={css.form} autoComplete="off">
-        <label className={css.label}>
-          Username
-          <Field type="text" name="name" />
-          <ErrorMessage name="name" as="span"></ErrorMessage>
-        </label>
-        <label className={css.label}>
-          Email
-          <Field type="email" name="email" />
-          <ErrorMessage name="email" as="span"></ErrorMessage>
-        </label>
-        <label className={css.label}>
-          Password
-          <Field type="password" name="password" />
-          <ErrorMessage name="password" as="span"></ErrorMessage>
-        </label>
-        <button type="submit">Register</button>
-      </Form>
-    </Formik>
+    <div>
+      <form onSubmit={formik.handleSubmit} autoComplete="off">
+        <FormControl sx={{ gap: '10px' }}>
+          <TextField
+            name="name"
+            variant="outlined"
+            label="Name"
+            size="small"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
+          ></TextField>
+          <TextField
+            name="email"
+            variant="outlined"
+            label="Email"
+            size="small"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+          ></TextField>
+          <TextField
+            type="password"
+            name="password"
+            variant="outlined"
+            label="Password"
+            size="small"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+          ></TextField>
+          <Button type="submit">Register</Button>
+        </FormControl>
+      </form>
+    </div>
   );
 };

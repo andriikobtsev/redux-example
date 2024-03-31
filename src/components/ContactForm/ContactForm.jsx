@@ -29,6 +29,7 @@ export const ContactForm = () => {
   };
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: initialValues,
     validationSchema: schema,
     onSubmit: (values, actions) => {

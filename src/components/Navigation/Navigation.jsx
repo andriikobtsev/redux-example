@@ -1,20 +1,21 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks';
+import { Box, Typography } from '@mui/material';
 import css from './Navigation.module.css';
 
 export const Navigation = () => {
   const { isLoggedIn } = useAuth();
 
   return (
-    <nav>
-      <NavLink className={css.link} to="/">
+    <Box>
+      <Typography component={NavLink} className={css.link} to="/">
         Home
-      </NavLink>
+      </Typography>
       {isLoggedIn && (
-        <NavLink className={css.link} to="/contacts">
+        <Typography component={NavLink} className={css.link} to="/contacts">
           Contacts
-        </NavLink>
+        </Typography>
       )}
-    </nav>
+    </Box>
   );
 };

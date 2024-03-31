@@ -18,7 +18,7 @@ export default function Contacts() {
 
   return (
     <>
-      <DocumentTitle>Your contacts</DocumentTitle>
+      <DocumentTitle>Contacts</DocumentTitle>
       <div>{isLoading && 'Request in progress...'}</div>
       <Stack direction='column' spacing={3}>
         <Grid

@@ -1,8 +1,10 @@
+import HomeIcon from '@mui/icons-material/Home';
 import DocumentTitle from '../components/DocumentTitle';
+import { Box, Typography } from '@mui/material';
 
 const styles = {
   container: {
-    minHeight: 'calc(100vh - 50px)',
+    minHeight: 'calc(100vh - 150px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -19,14 +21,10 @@ export default function Home() {
     <>
       <DocumentTitle>Home</DocumentTitle>
 
-      <div style={styles.container}>
-        <h1 style={styles.title}>
-          Contacts manager welcome page{' '}
-          <span role="img" aria-label="Greeting icon">
-            💁‍♀️
-          </span>
-        </h1>
-      </div>
+      <Box style={styles.container}>
+        <HomeIcon sx={{ width: 100, heigth: 100 }} fontSize="large" />
+        <Typography variant="h3">Contacts book</Typography>
+      </Box>
     </>
   );
 }

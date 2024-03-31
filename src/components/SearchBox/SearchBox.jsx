@@ -1,7 +1,8 @@
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { TextField } from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 import { changeFilter } from '../../redux/filter/slice';
+import SearchIcon from '@mui/icons-material/Search';
 import { selectNameFilter } from '../../redux/filter/selectors';
 
 export const SearchBox = () => {
@@ -12,10 +13,17 @@ export const SearchBox = () => {
   return (
     <TextField
       label="Search for contact"
-      size='small'
+      size="small"
       type="text"
       value={value}
       onChange={handleSearch}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
     ></TextField>
   );
 };
