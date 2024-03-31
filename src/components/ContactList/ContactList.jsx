@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import Contact from '../Contact/Contact';
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { selectFilteredContacts } from '../../redux/contacts/selectors';
 import css from './ContactList.module.css'
 
@@ -18,7 +18,7 @@ export const ContactList = () => {
         flexWrap="wrap"
         className={css.ul}
       >
-        {contacts.map(contact => (
+        {contacts.length === 0 ? <Typography variant='h5' ml={2}>Add your first contact!</Typography> : contacts.map(contact => (
           <Box key={contact.id} p={1}>
             <Contact
             name={contact.name}

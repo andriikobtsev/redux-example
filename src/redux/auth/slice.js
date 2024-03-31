@@ -23,6 +23,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isLoggedIn = true;
+        toast.success(`User ${action.payload.user.name} has been created`);
       })
       .addCase(register.rejected, handleRejected)
       .addCase(logIn.fulfilled, (state, action) => {
