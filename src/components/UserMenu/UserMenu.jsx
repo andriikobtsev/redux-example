@@ -1,12 +1,12 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logOut } from '../../redux/auth/operations';
-import { useAuth } from '../../hooks';
+import { selectUser } from '../../redux/auth/selectors';
 import css from './UserMenu.module.css';
 import { Box, Button, Typography } from '@mui/material';
 
 export const UserMenu = () => {
   const dispatch = useDispatch();
-  const { user } = useAuth();
+  const user = useSelector(selectUser);
 
   return (
     <Box className={css.wrapper}>

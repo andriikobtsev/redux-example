@@ -5,6 +5,9 @@ import {
   addContact,
   updateContact,
 } from "./operations";
+import {
+  logOut
+} from "../auth/operations";
 import toast from "react-hot-toast";
 
 const handlePending = (state) => {
@@ -62,8 +65,12 @@ const contactsSlice = createSlice({
         state.items.splice(index, 1);
         toast.success(`Contact ${action.payload.name} deleted`);
       })
-      .addCase(deleteContact.rejected, handleRejected);
+      .addCase(deleteContact.rejected, handleRejected)
+      .addCase(logOut.fulfilled, state => {
+        state.items = [];
+      })
   },
 });
 
+export const contactsActions = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;

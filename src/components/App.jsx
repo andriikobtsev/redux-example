@@ -4,23 +4,23 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { useEffect, lazy } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 import { Layout } from './Layout';
 import { PrivateRoute } from './PrivateRoute';
 import { RestrictedRoute } from './RestrictedRoute';
 import { refreshUser } from '../redux/auth/operations';
-import { useAuth } from '../hooks';
+import { selectIsRefreshing } from '../redux/auth/selectors';
 import { Box } from '@mui/material';
 
 const HomePage = lazy(() => import('../pages/Home'));
-const RegisterPage = lazy(() => import('../pages/Register'));
+const RegisterPage = lazy(() => import('../pages/Registration'));
 const LoginPage = lazy(() => import('../pages/Login'));
 const ContactsPage = lazy(() => import('../pages/Contacts'));
 
 export const App = () => {
   const dispatch = useDispatch();
-  const { isRefreshing } = useAuth();
+  const isRefreshing = useSelector(selectIsRefreshing);
 
   useEffect(() => {
     dispatch(refreshUser());
@@ -30,9 +30,9 @@ export const App = () => {
     <b>Refreshing user...</b>
   ) : (
     <Box>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
           <Route
             path="/register"
             element={
@@ -45,7 +45,10 @@ export const App = () => {
           <Route
             path="/login"
             element={
-              <RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />
+              <RestrictedRoute
+                redirectTo="/contacts"
+                component={<LoginPage />}
+              />
             }
           />
           <Route
@@ -54,8 +57,9 @@ export const App = () => {
               <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
             }
           />
-        </Route>
-      </Routes>
+          <Route path="*" element={<Box>Page Not Found</Box>} />
+        </Routes>
+      </Layout>
     </Box>
   );
 };

@@ -1,9 +1,9 @@
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { TextField, InputAdornment } from '@mui/material';
-import { changeFilter } from '../../redux/filter/slice';
+import { changeFilter } from '../../redux/filters/slice';
 import SearchIcon from '@mui/icons-material/Search';
-import { selectNameFilter } from '../../redux/filter/selectors';
+import { selectNameFilter } from '../../redux/filters/selectors';
 
 export const SearchBox = () => {
   const dispatch = useDispatch();
